@@ -34,3 +34,11 @@ def calcular_imc(request):
         'resultado': resultado, 
         'classificacao': classificacao
     })
+
+    
+    
+def pagina2(request):
+    return render(request, 'calculadora/index2.html')
+
+def pagina3(request):
+    return render(request, 'calculadora/index3.html')

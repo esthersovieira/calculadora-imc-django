@@ -8,7 +8,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            background: linear-gradient(135deg, #715dca, #a960d3);
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
@@ -17,12 +17,33 @@
         .container-box {
             max-width: 600px;
             margin: 50px auto;
-            background: white;
+            background: rgb(221, 167, 105);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
+
+/* Estilo geral do botão */
+.btn-primary {
+    background: #be9351;
+    border: none; /* Remove a borda padrão do bootstrap */
+    border-radius: 10px; /* Altere este valor para mudar os cantos (ex: 50px para redondo) */
+    transition: all 0.2s; /* Deixa a mudança de formato suave */
+}
+
+/* Quando passa o mouse */
+.btn-primary:hover {
+    background: #a67c3d; /* Um tom um pouco mais escuro */
+    border-radius: 20px; /* Opcional: os cantos mudam ao passar o mouse */
+}
+
+/* Quando você aperta e SEGURA */
+.btn-primary:active {
+    background-color: rgb(150, 96, 16) !important; /* Cor que você pediu */
+    border-radius: 50px !important; /* Os cantos ficam bem redondos ao segurar */
+    transform: scale(0.95); /* Opcional: dá um efeito de "afundar" o botão */
+}
         .resultado-central {
             position: fixed;
             top: 0;
@@ -33,8 +54,8 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background: rgba(0,0,0,0.6);
-            color: white;
+            background: rgba(199, 154, 230, 0.767);
+            color: rgb(255, 255, 255);
         }
 
         .numero {
@@ -62,7 +83,7 @@
             placeholder="Digite aqui...">{{ texto }}</textarea>
 
         <div class="d-grid">
-            <button class="btn btn-primary">Calcular</button>
+            <button class="btn btn-primary" id = "botao">Calcular</button>
         </div>
     </form>
 </div>
