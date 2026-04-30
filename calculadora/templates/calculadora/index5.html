@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Sistema Solar Interativo</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #02010a, #000);
+}
+
+/* Container */
+.space {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Sol */
+.sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, yellow, orange, red);
+    box-shadow: 0 0 80px orange, 0 0 160px red;
+}
+
+/* Órbita */
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.1);
+    transform: translate(-50%, -50%);
+}
+
+/* Planetas */
+.planet {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+/* Cores dos planetas */
+.mercury { width: 8px; height: 8px; background: gray; }
+.venus   { width: 14px; height: 14px; background: #d4a373; }
+.earth   { width: 16px; height: 16px; background: blue; }
+.mars    { width: 12px; height: 12px; background: red; }
+.jupiter { width: 30px; height: 30px; background: orange; }
+.saturn  { width: 26px; height: 26px; background: #e9c46a; }
+.uranus  { width: 20px; height: 20px; background: lightblue; }
+.neptune { width: 20px; height: 20px; background: blue; }
+
+/* Glow aesthetic */
+.glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,100,255,0.1), transparent);
+    filter: blur(60px);
+}
+</style>
+</head>
+
+<body class="text-white">
+
+<div class="space" id="space">
+
+    <div class="glow"></div>
+    <div class="sun"></div>
+
+    <!-- Órbitas -->
+    <div class="orbit" style="width:160px;height:160px"><div class="planet mercury"></div></div>
+    <div class="orbit" style="width:220px;height:220px"><div class="planet venus"></div></div>
+    <div class="orbit" style="width:300px;height:300px"><div class="planet earth"></div></div>
+    <div class="orbit" style="width:380px;height:380px"><div class="planet mars"></div></div>
+    <div class="orbit" style="width:500px;height:500px"><div class="planet jupiter"></div></div>
+    <div class="orbit" style="width:620px;height:620px"><div class="planet saturn"></div></div>
+    <div class="orbit" style="width:740px;height:740px"><div class="planet uranus"></div></div>
+    <div class="orbit" style="width:860px;height:860px"><div class="planet neptune"></div></div>
+
+</div>
+
+<script>
+// Rotação base automática
+gsap.utils.toArray(".orbit").forEach((orbit, i) => {
+    gsap.to(orbit, {
+        rotation: 360,
+        duration: 10 + i * 5,
+        repeat: -1,
+        ease: "linear"
+    });
+});
+
+// Controle tipo "knob"
+let rotation = 0;
+
+Draggable.create("#space", {
+    type: "rotation",
+    inertia: true,
+    onDrag: function() {
+        rotation = this.rotation;
+        gsap.to(".orbit", {
+            rotation: (i) => rotation * (1 + i * 0.1),
+            overwrite: true
+        });
+    }
+});
+
+// Scroll também controla
+window.addEventListener("wheel", (e) => {
+    rotation += e.deltaY * 0.1;
+
+    gsap.to(".orbit", {
+        rotation: (i) => rotation * (1 + i * 0.1),
+        overwrite: true
+    });
+});
+
+// Pulsação do sol
+gsap.to(".sun", {
+    scale: 1.1,
+    duration: 2,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+});
+</script>
+
+</body>
+</html>

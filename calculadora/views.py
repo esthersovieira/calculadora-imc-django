@@ -35,10 +35,15 @@ def calcular_imc(request):
         'classificacao': classificacao
     })
 
-    
-    
-def pagina2(request):
-    return render(request, 'calculadora/index2.html')
 
-def pagina3(request):
-    return render(request, 'calculadora/index3.html')
+def pagina1(x = None):
+    return render(x, 'calculadora/index2.html')
+
+def pagina2(x = None):
+    return render(x, 'calculadora/index3.html')
+
+def torradeira(x = None):
+    return render(x, 'calculadora/index4.html')
+
+def sistema_solar(x = None):
+    return render(x, 'calculadora/index5.html')

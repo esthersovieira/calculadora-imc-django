@@ -1,0 +1,298 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Burger Game</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+body {
+    background: linear-gradient(#fff7ed, #ffe0b2);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+/* área principal */
+.game {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+/* PRATO */
+.plate {
+    width: 320px;
+    height: 90px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+/* BURGER */
+.burger {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* LAYERS */
+.layer {
+    width: 220px;
+    height: 28px;
+    border-radius: 20px;
+    margin-top: -8px;
+}
+
+.bread-bottom { background: #c68642; height: 45px; }
+.bread-top { background: #d4a373; height: 50px; }
+.meat { background: #5c2c06; }
+.cheese { background: linear-gradient(yellow, orange); }
+.lettuce { background: #4caf50; }
+.tomato { background: red; }
+.ketchup { background: red; height: 10px; }
+.mayo { background: #fff3c4; height: 10px; }
+
+/* TÍTULO */
+.title {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+/* MENU */
+.btn-ing {
+    padding: 8px 12px;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+.btn-ing:hover { transform: scale(1.05); }
+
+/* PEDIDOS (PAPEL) */
+.paper {
+    width: 220px;
+    height: 320px;
+    background: #fffdf7;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.paper h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#orderText {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* TIMER */
+.timer {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #d97706;
+}
+
+/* CONFETE */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    z-index: 9999;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <!-- JOGO -->
+    <div class="text-center">
+
+        <div class="title" id="title">🍔 Monte seu hambúrguer</div>
+
+        <div class="plate">
+            <div class="burger" id="burger"></div>
+        </div>
+
+        <div class="timer" id="timer">⏱️ Tempo: 20</div>
+
+        <div class="flex flex-wrap justify-center gap-2 mt-4">
+            <div class="btn-ing" onclick="add('bread-bottom')">🍞 Base</div>
+            <div class="btn-ing" onclick="add('lettuce')">🥬</div>
+            <div class="btn-ing" onclick="add('tomato')">🍅</div>
+            <div class="btn-ing" onclick="add('meat')">🥩</div>
+            <div class="btn-ing" onclick="add('cheese')">🧀</div>
+            <div class="btn-ing" onclick="add('ketchup')">🔴</div>
+            <div class="btn-ing" onclick="add('mayo')">⚪</div>
+            <div class="btn-ing" onclick="add('bread-top')">🍞 Topo</div>
+        </div>
+
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="paper">
+        <h3>📜 PEDIDOS</h3>
+        <div id="orderText"></div>
+    </div>
+
+</div>
+
+<script>
+
+const orders = [
+    ["bread-bottom","meat","cheese","bread-top"],
+    ["bread-bottom","lettuce","tomato","ketchup","bread-top"],
+    ["bread-bottom","meat","cheese","mayo","lettuce","bread-top"]
+];
+
+let currentOrder = [];
+let stack = [];
+let time = 20;
+let timerInterval;
+
+function newOrder() {
+    stack = [];
+    document.getElementById("burger").innerHTML = "";
+
+    currentOrder = orders[Math.floor(Math.random()*orders.length)];
+
+    document.getElementById("orderText").innerHTML =
+        currentOrder.map(i => "• " + translate(i)).join("<br>");
+
+    resetTimer();
+}
+
+function translate(item) {
+    const map = {
+        "bread-bottom":"Pão de baixo",
+        "bread-top":"Pão de cima",
+        "meat":"Carne",
+        "cheese":"Queijo",
+        "lettuce":"Alface",
+        "tomato":"Tomate",
+        "ketchup":"Ketchup",
+        "mayo":"Maionese"
+    };
+    return map[item];
+}
+
+/* TIMER */
+function resetTimer() {
+    clearInterval(timerInterval);
+    time = 20;
+
+    timerInterval = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = "⏱️ Tempo: " + time;
+
+        if (time <= 0) {
+            clearInterval(timerInterval);
+            fail();
+        }
+    }, 1000);
+}
+
+/* ERRO */
+function fail() {
+    gsap.to("#burger", {
+        rotation: 10,
+        duration: 0.1,
+        repeat: 6,
+        yoyo: true
+    });
+
+    setTimeout(newOrder, 1500);
+}
+
+/* ADD ITEM */
+function add(type) {
+
+    if (type !== currentOrder[stack.length]) {
+        fail();
+        return;
+    }
+
+    const burger = document.getElementById("burger");
+
+    let layer = document.createElement("div");
+    layer.classList.add("layer", type);
+    burger.appendChild(layer);
+
+    stack.push(type);
+
+    // sobe junto com título
+    gsap.to("#title", {
+        y: -stack.length * 4,
+        duration: 0.2
+    });
+
+    gsap.from(layer, {
+        y: -50,
+        opacity: 0,
+        duration: 0.3,
+        ease: "back.out(2)"
+    });
+
+    if (stack.length === currentOrder.length) {
+        win();
+    }
+}
+
+/* VITÓRIA */
+function win() {
+
+    clearInterval(timerInterval);
+
+    // burger anima
+    gsap.to("#burger", {
+        scale: 1.2,
+        duration: 0.3,
+        yoyo: true,
+        repeat: 1
+    });
+
+    // CONFETE FULL SCREEN
+    for (let i = 0; i < 120; i++) {
+        let c = document.createElement("div");
+        c.classList.add("confetti");
+        document.body.appendChild(c);
+
+        gsap.set(c, {
+            x: window.innerWidth/2,
+            y: window.innerHeight/2,
+            background: `hsl(${Math.random()*360},100%,50%)`
+        });
+
+        gsap.to(c, {
+            x: "+=" + (Math.random()*window.innerWidth - window.innerWidth/2),
+            y: "+=" + (Math.random()*window.innerHeight - window.innerHeight/2),
+            rotation: Math.random()*720,
+            duration: 2,
+            onComplete: () => c.remove()
+        });
+    }
+
+    setTimeout(newOrder, 2000);
+}
+
+newOrder();
+
+</script>
+
+</body>
+</html>
